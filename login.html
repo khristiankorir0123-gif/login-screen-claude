@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zenith — Family Hub Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: rgba(255,255,255,0.07);
+    --blue: #3b82f6;
+    --blue-glow: rgba(59,130,246,0.25);
+    --text: #f0f0f5;
+    --muted: #6b6b80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Background orbs */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    animation: drift1 12s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; right: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 70%);
+    pointer-events: none;
+    animation: drift2 15s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(80px, 60px); } }
+  @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-60px, -80px); } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 44px 44px;
+    width: 420px;
+    max-width: 95vw;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border) inset;
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .zenith-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blue);
+    text-align: center;
+    margin-bottom: 36px;
+    opacity: 0.9;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 36px;
+  }
+
+  /* Avatar upload */
+  .avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .avatar-ring {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--blue);
+    padding: 3px;
+    margin-bottom: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .avatar-ring:hover { box-shadow: 0 0 0 4px var(--blue-glow); }
+
+  .avatar-img {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .avatar-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .avatar-placeholder {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 30px;
+    transition: background 0.2s;
+  }
+  .avatar-ring:hover .avatar-placeholder { background: #1e1e28; }
+
+  .avatar-label {
+    font-size: 12px;
+    color: var(--blue);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: opacity 0.2s;
+  }
+  .avatar-label:hover { opacity: 0.7; }
+
+  #avatarInput { display: none; }
+
+  /* Profiles list */
+  .profiles-section {
+    margin-bottom: 28px;
+  }
+
+  .profiles-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .profiles-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: 44px;
+  }
+
+  .profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 12px 5px 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    position: relative;
+  }
+  .profile-chip:hover { border-color: var(--blue); background: rgba(59,130,246,0.08); }
+  .profile-chip.active { border-color: var(--blue); background: rgba(59,130,246,0.15); }
+
+  .chip-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #23232f;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .chip-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .chip-delete {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    background: #ef4444;
+    border-radius: 50%;
+    font-size: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .profile-chip:hover .chip-delete { display: flex; }
+
+  .no-profiles {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  label.field-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+  }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 8px;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.35);
+  }
+  .btn-primary:hover {
+    background: #5b9af8;
+    box-shadow: 0 6px 28px rgba(59,130,246,0.5);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    margin-top: 10px;
+  }
+  .btn-secondary:hover { background: var(--surface2); border-color: rgba(255,255,255,0.15); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 22px 0;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 22px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: rgba(34,197,94,0.4); color: #4ade80; }
+  .toast.error   { border-color: rgba(239,68,68,0.4); color: #f87171; }
+</style>
+</head>
+<body>
+
+<div class="card" id="loginCard">
+  <div class="zenith-logo">⬡ Zenith Family Hub</div>
+  <h1>Who's Here?</h1>
+  <p class="sub">Pick a profile or create a new one</p>
+
+  <!-- Saved profiles -->
+  <div class="profiles-section">
+    <div class="profiles-label">Saved Profiles</div>
+    <div class="profiles-grid" id="profilesGrid">
+      <span class="no-profiles">No profiles yet</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- New profile form -->
+  <div class="avatar-upload">
+    <div class="avatar-ring" onclick="document.getElementById('avatarInput').click()" title="Upload photo">
+      <div class="avatar-placeholder" id="avatarPreview">👤</div>
+    </div>
+    <label class="avatar-label" for="avatarInput">Upload Photo</label>
+    <input type="file" id="avatarInput" accept="image/*">
+  </div>
+
+  <div class="form-group">
+    <label class="field-label" for="nameInput">Your Name</label>
+    <input type="text" id="nameInput" placeholder="e.g. Khristian, Oliver…" maxlength="32" autocomplete="off">
+  </div>
+
+  <div class="form-group">
+    <label class="field-label" for="roleInput">Role (optional)</label>
+    <input type="text" id="roleInput" placeholder="e.g. Dad, Mum, Kid…" maxlength="24" autocomplete="off">
+  </div>
+
+  <button class="btn btn-primary" onclick="saveAndLogin()">Enter Hub →</button>
+  <button class="btn btn-secondary" onclick="loginOnly()" id="loginOnlyBtn" style="display:none;">Continue without saving</button>
+
+  <p class="footer-note">Profiles are stored in your browser and shared across devices via the cloud sync key below the hub.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'zenith_profiles';
+  const SESSION_KEY = 'zenith_session';
+  let currentAvatarDataUrl = null;
+  let selectedProfile = null;
+
+  // ─── Profiles persistence ────────────────────────────────────────────────
+
+  function getProfiles() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  function saveProfiles(arr) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    // Broadcast to other tabs
+    localStorage.setItem('zenith_profiles_ts', Date.now());
+  }
+
+  // ─── Render profiles ─────────────────────────────────────────────────────
+
+  function renderProfiles() {
+    const grid = document.getElementById('profilesGrid');
+    const profiles = getProfiles();
+    if (!profiles.length) {
+      grid.innerHTML = '<span class="no-profiles">No profiles yet — create one below</span>';
+      return;
+    }
+    grid.innerHTML = '';
+    profiles.forEach((p, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'profile-chip' + (selectedProfile === i ? ' active' : '');
+      chip.innerHTML = `
+        <div class="chip-avatar">
+          ${p.avatar ? `<img src="${p.avatar}" alt="${p.name}">` : `<span style="font-size:16px">${p.name[0].toUpperCase()}</span>`}
+        </div>
+        <span>${p.name}</span>
+        <div class="chip-delete" onclick="deleteProfile(event,${i})">✕</div>
+      `;
+      chip.addEventListener('click', () => selectProfile(i));
+      grid.appendChild(chip);
+    });
+  }
+
+  function selectProfile(i) {
+    selectedProfile = i;
+    const profiles = getProfiles();
+    const p = profiles[i];
+    document.getElementById('nameInput').value = p.name;
+    document.getElementById('roleInput').value = p.role || '';
+    if (p.avatar) {
+      currentAvatarDataUrl = p.avatar;
+      document.getElementById('avatarPreview').innerHTML = `<img src="${p.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+    document.getElementById('loginOnlyBtn').style.display = 'block';
+    renderProfiles();
+  }
+
+  function deleteProfile(e, i) {
+    e.stopPropagation();
+    const profiles = getProfiles();
+    profiles.splice(i, 1);
+    saveProfiles(profiles);
+    selectedProfile = null;
+    renderProfiles();
+    showToast('Profile removed', 'success');
+  }
+
+  // ─── Avatar upload ────────────────────────────────────────────────────────
+
+  document.getElementById('avatarInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) { showToast('Image too large (max 3MB)', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentAvatarDataUrl = e.target.result;
+      document.getElementById('avatarPreview').innerHTML = `<img src="${currentAvatarDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ─── Login actions ────────────────────────────────────────────────────────
+
+  function saveAndLogin() {
+    const name = document.getElementById('nameInput').value.trim();
+    const role = document.getElementById('roleInput').value.trim();
+    if (!name) { showToast('Enter your name first', 'error'); return; }
+
+    const profiles = getProfiles();
+    const profile = { name, role, avatar: currentAvatarDataUrl };
+
+    if (selectedProfile !== null) {
+      profiles[selectedProfile] = profile;
+    } else {
+      // Check duplicate name
+      if (!profiles.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+        profiles.push(profile);
+      }
+    }
+    saveProfiles(profiles);
+
+    // Set session
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(profile));
+    showToast('Welcome, ' + name + '!', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+  }
+
+  function loginOnly() {
+    const name = document.getElementById('nameInput').value.trim();
+    const role = document.getElementById('roleInput').value.trim();
+    if (!name) { showToast('Enter your name first', 'error'); return; }
+    const profile = { name, role, avatar: currentAvatarDataUrl };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(profile));
+    window.location.href = 'dashboard.html';
+  }
+
+  // ─── Toast ────────────────────────────────────────────────────────────────
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = 'toast', 2400);
+  }
+
+  // ─── Storage sync across tabs ─────────────────────────────────────────────
+
+  window.addEventListener('storage', e => {
+    if (e.key === 'zenith_profiles_ts') renderProfiles();
+  });
+
+  // ─── Init ─────────────────────────────────────────────────────────────────
+
+  renderProfiles();
+
+  // Auto-fill if session exists
+  const sess = sessionStorage.getItem(SESSION_KEY);
+  if (sess) {
+    try {
+      const p = JSON.parse(sess);
+      document.getElementById('nameInput').value = p.name || '';
+      document.getElementById('roleInput').value = p.role || '';
+      if (p.avatar) {
+        currentAvatarDataUrl = p.avatar;
+        document.getElementById('avatarPreview').innerHTML = `<img src="${p.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      }
+      document.getElementById('loginOnlyBtn').style.display = 'block';
+    } catch {}
+  }
+</script>
+</body>
+</html>
